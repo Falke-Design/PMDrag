@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Leaflet PMDrag: Extends the drag mode for layergroups</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.5.0/dist/leaflet-geoman.css">
+    <link rel="stylesheet" href="./demo/demo.css" />
+    <script src="https://unpkg.com/leaflet@latest/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <a href="https://github.com/Falke-Design/PMDrag"><img src="./demo/github-corner.png" class="githubcorner"/></a>
+    <div class="wrapper">
+
+        <article>
+            <h1 style="margin-bottom: 10px;">Leaflet <a href="https://github.com/Falke-Design/PMDrag">PMDrag</a>: Extends the drag mode for layergroups</h1>
+            <span style="display: block;font-size: 19px;margin-bottom: 20px;">This is a <a href="https://github.com/geoman-io/leaflet-geoman">Leaflet Geoman</a> Subplugin</span>
+            <div class="map" id="example2"></div>
+        </article>
+        <article>
+            <br>
+            <h3><strong>Installation</strong></h3>
+            <span>Download <a href="https://raw.githubusercontent.com/Falke-Design/PMDrag/master/dist/pmDrag.js">pmDrag.js</a> and include them in your project.</span>
+            <pre>&lt;script src="./dist/pmDrag.js"&gt;&lt;/script&gt;</pre>
+            <span>or use the script over cdn:</span>
+            <pre>&lt;script src="https://cdn.jsdelivr.net/gh/Falke-Design/PMDrag/dist/pmDrag.js"&gt;&lt;/script&gt;</pre>
+            <br>
+            <h3><strong>Init PMDrag</strong></h3>
+            <span>Add PMDrag after added Controls of Leaflet Geoman <strong>map.pm.addControls()</strong></span>
+            <pre>pmDrag = new L.PMDrag(map)</pre>
+            <span>If you want to use <strong>L.LayerGroup</strong> instead of L.FeatureGroup (recommended) you have to set the option "overwriteLayerGroup: true" to overwrite the default L.LayerGroup of Leaflet and adding events.</span>
+            <pre>pmDrag = new L.PMDrag(map, {overwriteLayerGroup: true})</pre>
+
+            <span><strong>Disable drag on layer</strong></span>
+            <div>
+                <span>Disable layer and layergroup drag</span>
+                <pre>L.marker([lat,lng],{pmDrag: false})</pre>
+                <span>Disable layer drag</span>
+                <pre>L.marker([lat,lng],{pmDrag: {layer: false})</pre>
+                <span>Disable layergroup drag</span>
+                <pre>L.marker([lat,lng],{pmDrag: {layergroup: false}})</pre>
+            </div>
+
+            <h3><strong>Functions</strong></h3>
+            <span><strong>setText</strong></span>
+            <div>
+                <pre>pmDrag.setText(text)</pre>
+                <pre>text: {layer: "Layer", layergroup: "Layergroup",finish: "Finish"}</pre>
+            </div>
+
+            <span><strong>setMode</strong></span>
+            <div>
+                <span>Mode layer: 0 or "layer", mode layergroup: 1 or "layergroup"</span>
+                <pre>pmDrag.setMode(mode)</pre>
+            </div>
+
+            <span><strong>getMode</strong></span>
+            <div>
+                <span>Mode layer = 0, layergroup = 1</span>
+                <pre>pmDrag.getMode()</pre>
+            </div>
+            <span><strong>getTextMode</strong></span>
+            <div>
+                <span>Returns "layer" or "layergroup"</span>
+                <pre>pmDrag.getTextMode()</pre>
+            </div>
+        </article>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.5.0/dist/leaflet-geoman.min.js"></script>
+    <script src="dist/pmDrag.js"></script>
+    <script src="./demo/demo.js"></script>
+</body>
+
+</html>
