@@ -39,7 +39,7 @@ Disable layergroup drag
 ##### setText
 `pmDrag.setText(text)`
 ```
-text: {layer: "Layer", layergroup: "Layergroup",finish: "Finish"}
+text: {layer: "Layer", layergroup: "Layergroup"}
 ```
 
 ##### setMode

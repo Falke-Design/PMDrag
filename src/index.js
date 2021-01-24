@@ -56,8 +56,23 @@ L.PMDrag = L.Class.extend({
         this._overwriteFunctions();
         this._addCss();
 
-        this.map.pm.Toolbar._showHideButtons = this._extend(this.map.pm.Toolbar._showHideButtons,this._createActionBtn(this),this.map.pm.Toolbar);
-        this.map.pm.Toolbar._showHideButtons();
+        var that = this;
+        const actions = [{
+                name: 'layer',
+                text: this.options.text.layer,
+                onClick() {
+                    that.map.pm.changeDragMode(0);
+                },
+            },
+            {
+                name: 'layergroup',
+                text: this.options.text.layergroup,
+                onClick() {
+                    that.map.pm.changeDragMode(1);
+                },
+            }
+        ];
+        this.map.pm.Toolbar.changeActionsOfControl("dragMode",actions.concat(this.map.pm.Toolbar.buttons.dragMode._button.actions));
 
         this.map.pm.changeDragMode(0);  //0 Layer, 1 Layergroup
 
@@ -68,9 +83,6 @@ L.PMDrag = L.Class.extend({
         }
         if(text.layergroup){
             this.options.text.layergroup = text.layergroup;
-        }
-        if(text.finish){
-            this.options.text.finish = text.finish;
         }
         this._createActionBtn(this)();
         this.setMode(this.getMode());
@@ -115,6 +127,8 @@ L.PMDrag = L.Class.extend({
             };
         }
 
+        L.PM.PMDrag = Object.assign(Object.create(Object.getPrototypeOf(L.PM.Edit.Line)), L.PM.Edit.Line);
+
         //Overwrite DragMixin
         L.PM.Edit.LayerGroup.include(DragMixin);
         L.PM.Edit.Circle.include(DragMixin);
@@ -123,60 +137,6 @@ L.PMDrag = L.Class.extend({
         L.PM.Edit.Marker.include(DragMixin);
         L.PM.Edit.Polygon.include(DragMixin);
         L.PM.Edit.Rectangle.include(DragMixin);
-    },
-    _createActionBtn: function(that){
-        return function() {
-            const actions = [
-                {
-                    name: 'layer',
-                    text: that.options.text.layer,
-                    onClick() {
-                        that.map.pm.changeDragMode(0);
-                    },
-                },
-                {
-                    name: 'layergroup',
-                    text: that.options.text.layergroup,
-                    onClick() {
-                        that.map.pm.changeDragMode(1);
-                    },
-                },
-                {
-                    name: 'finish',
-                    text: that.options.text.finish,
-                    onClick() {
-                        that.map.pm.toggleGlobalDragMode();
-                    },
-                },
-            ];
-
-            var actionContainer = that.map.pm.Toolbar.buttons.dragMode.buttonsDomNode.children[1];
-            actionContainer.innerHTML = "";
-            actions.forEach(action => {
-                var name = action.name;
-                const actionNode = L.DomUtil.create(
-                    'a',
-                    `leaflet-pm-action action-${name}`,
-                    actionContainer
-                );
-
-                if (action.text) {
-                    actionNode.innerHTML = action.text;
-                } else {
-                    actionNode.innerHTML = "Text not translated!";
-                }
-
-
-                L.DomEvent.addListener(actionNode, 'click', action.onClick, that);
-                L.DomEvent.disableClickPropagation(actionNode);
-            });
-        }
-    },
-    _extend: function(fn,code,that){
-        return function(){
-            fn.apply(that,arguments);
-            code.apply(that,arguments);
-        }
     },
     _markBtnAction: function(name){
         //Clear active btn
