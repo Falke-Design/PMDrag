@@ -3,30 +3,32 @@ const DragMixin = {
         // before enabling layer drag, disable layer editing
         this.disable();
 
-        if (this._layers && this._layers.length > 0 && this._layers[0]._map.pm._dragMode === 1) { //Check if Layergroup
-            this._layerGroup.on('mousedown', this._dragMixinOnMouseDownLayerGroup, this);
-            this._layers.forEach(function (layer) {
-                if (layer.pm.options.snappable) {
-                    if(layer instanceof L.Circle){
-                        if (layer.pm._markers && layer.pm._disableSnapping) {
-                            layer.pm._disableSnapping();
-                        }
-                    }else{
-                        if (layer.pm._disableSnapping) {
-                            layer.pm._disableSnapping();
+        if (this._layers ) { //Check if Layergroup
+            if(this._layers.length > 0 && this._layers[0]._map.pm._dragMode === 1) {
+                this._layerGroup.on('mousedown', this._dragMixinOnMouseDownLayerGroup, this);
+                this._layers.forEach(function (layer) {
+                    if (layer.pm.options.snappable) {
+                        if (layer instanceof L.Circle) {
+                            if (layer.pm._markers && layer.pm._disableSnapping) {
+                                layer.pm._disableSnapping();
+                            }
+                        } else {
+                            if (layer.pm._disableSnapping) {
+                                layer.pm._disableSnapping();
+                            }
                         }
                     }
-                }
 
-                if(!(layer instanceof L.Marker)) {
-                    // add CSS class
-                    const el = layer._path
-                        ? layer._path
-                        : layer._renderer._container;
-                    L.DomUtil.addClass(el, 'leaflet-pm-draggable');
-                }
-            })
-        } else if(this._layer._map.pm._dragMode === 0 ){
+                    if (!(layer instanceof L.Marker)) {
+                        // add CSS class
+                        const el = layer._path
+                            ? layer._path
+                            : layer._renderer._container;
+                        L.DomUtil.addClass(el, 'leaflet-pm-draggable');
+                    }
+                })
+            }
+        } else if(this._layer && this._layer._map.pm._dragMode === 0 ){
             if (this._layer instanceof L.Marker && !this._checkDragAllowed()) {
                 return;
             }
@@ -36,33 +38,9 @@ const DragMixin = {
     },
     disableLayerDrag() {
         if (this._layers) { //Check if Layergroup
-
             this._layerGroup.off('mousedown', this._dragMixinOnMouseDownLayerGroup, this);
-
         } else {
-
-            if (this._layer instanceof L.Marker) {
-                this._layer.off('dragstart', this._fireDragStart, this);
-                this._layer.off('drag', this._fireDrag, this);
-                this._layer.off('dragend', this._fireDragEnd, this);
-                if (this._layer.dragging) {
-                    this._layer.dragging.disable();
-                }
-                return;
-            }
-
-            // remove CSS class
-            if (this._layer._map.options.preferCanvas) {
-                this._layer.off('mouseout', this.removeDraggingClass, this);
-                this._layer.off('mouseover', this.addDraggingClass, this);
-            } else {
-                this.removeDraggingClass();
-            }
-            // no longer save the drag state
-            this._safeToCacheDragState = false;
-
-            // disable mousedown event
-            this._layer.off('mousedown', this._dragMixinOnMouseDown, this);
+            L.PM.PMDrag.__super__.disableLayerDrag.call(this);
         }
     },
     _dragMixinOnMouseDown(e) {
