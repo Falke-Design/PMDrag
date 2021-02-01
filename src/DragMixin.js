@@ -4,9 +4,12 @@ const DragMixin = {
         this.disable();
 
         if (this._layers ) { //Check if Layergroup
-            if(this._layers.length > 0 && this._layers[0]._map.pm._dragMode === 1) {
+            if(this._layers.length > 0 && this._getMapOfLayers().pm._dragMode === 1) {
                 this._layerGroup.on('mousedown', this._dragMixinOnMouseDownLayerGroup, this);
                 this._layers.forEach(function (layer) {
+                    if(layer instanceof L.LayerGroup){
+                        return;
+                    }
                     if (layer.pm.options.snappable) {
                         if (layer instanceof L.Circle) {
                             if (layer.pm._markers && layer.pm._disableSnapping) {
@@ -36,6 +39,14 @@ const DragMixin = {
             L.PM.PMDrag.__super__.enableLayerDrag.call(this);
         }
     },
+    _getMapOfLayers(){
+      if(this._map){
+          return this._map;
+      }
+
+      var layer = this._layers.find(l=>l._map || (l.pm && l.pm._map));
+      return layer._map || layer.pm._map;
+    },
     disableLayerDrag() {
         if (this._layers) { //Check if Layergroup
             this._layerGroup.off('mousedown', this._dragMixinOnMouseDownLayerGroup, this);
@@ -56,6 +67,9 @@ const DragMixin = {
         }
 
         this._layers.forEach((layer) => {
+            if(layer instanceof L.LayerGroup){
+                return;
+            }
             if (!layer.pm._map) {
                 layer.pm._map = layer.pm._layer._map;
             }
@@ -75,6 +89,9 @@ const DragMixin = {
         // clear up mouseup event
         this._layerGroup._map.off('mouseup', this._dragMixinOnMouseUpLayerGroup, this);
         this._layers.forEach((layer) => {
+            if(layer instanceof L.LayerGroup){
+                return;
+            }
             if (!layer.pm._map) {
                 layer.pm._map = layer.pm._layer._map;
             }
