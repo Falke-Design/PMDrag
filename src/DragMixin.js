@@ -77,6 +77,10 @@ const DragMixin = {
             if (layer instanceof L.Marker) {
                 // save for delta calculation
                 layer.pm._tempDragCoord = e.latlng;
+                layer.fire('pm:dragstart', {
+                    layer: layer,
+                    shape: layer.pm.getShape()
+                });
                 layer.pm._map.on('mousemove', this._dragMixinOnMouseMoveLayerGroupMarker, layer.pm);
             } else {
                 layer.pm._dragMixinOnMouseDown(e);
@@ -98,8 +102,13 @@ const DragMixin = {
 
             if (layer instanceof L.Marker) {
                 layer.pm._map.off('mousemove', this._dragMixinOnMouseMoveLayerGroupMarker, layer.pm);
+                layer.fire('pm:dragend', {
+                    layer: layer,
+                    shape: layer.pm.getShape()
+                });
             } else {
-                layer.pm._dragMixinOnMouseUp();
+                // No need to call _dragMixinOnMouseUp because _dragMixinOnMouseDown already set a mouseup event on the map and call it self
+                // layer.pm._dragMixinOnMouseUp();
             }
         });
         return true;

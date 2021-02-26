@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "dependencies": {},
   "scripts": {
-    "build": "/node_modules/.bin/webpack --config=webpack.build.js"
+    "build": "npx webpack",
+    "watch": "npx webpack -w"
   },
   "devDependencies": {
     "webpack": "^4.42.1",
