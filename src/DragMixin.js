@@ -67,7 +67,7 @@ const DragMixin = {
         }
 
         this._layers.forEach((layer) => {
-            if(layer instanceof L.LayerGroup){
+            if(layer instanceof L.LayerGroup || !layer.pm._checkDragAllowed()){
                 return;
             }
             if (!layer.pm._map) {
@@ -77,10 +77,17 @@ const DragMixin = {
             if (layer instanceof L.Marker) {
                 // save for delta calculation
                 layer.pm._tempDragCoord = e.latlng;
-                layer.fire('pm:dragstart', {
-                    layer: layer,
-                    shape: layer.pm.getShape()
-                });
+                if(L.PM.Utils._fireEvent){
+                    L.PM.Utils._fireEvent(layer,'pm:dragstart', {
+                        layer: layer,
+                        shape: layer.pm.getShape()
+                    });
+                }else {
+                    layer.fire('pm:dragstart', {
+                        layer: layer,
+                        shape: layer.pm.getShape()
+                    });
+                }
                 layer.pm._map.on('mousemove', this._dragMixinOnMouseMoveLayerGroupMarker, layer.pm);
             } else {
                 layer.pm._dragMixinOnMouseDown(e);
@@ -93,7 +100,7 @@ const DragMixin = {
         // clear up mouseup event
         this._layerGroup._map.off('mouseup', this._dragMixinOnMouseUpLayerGroup, this);
         this._layers.forEach((layer) => {
-            if(layer instanceof L.LayerGroup){
+            if(layer instanceof L.LayerGroup || !layer.pm._checkDragAllowed()){
                 return;
             }
             if (!layer.pm._map) {
@@ -102,10 +109,19 @@ const DragMixin = {
 
             if (layer instanceof L.Marker) {
                 layer.pm._map.off('mousemove', this._dragMixinOnMouseMoveLayerGroupMarker, layer.pm);
-                layer.fire('pm:dragend', {
-                    layer: layer,
-                    shape: layer.pm.getShape()
-                });
+
+                if(L.PM.Utils._fireEvent){
+                    L.PM.Utils._fireEvent(layer,'pm:dragend', {
+                        layer: layer,
+                        shape: layer.pm.getShape()
+                    });
+                }else {
+                    layer.fire('pm:dragend', {
+                        layer: layer,
+                        shape: layer.pm.getShape()
+                    });
+                }
+
             } else {
                 // No need to call _dragMixinOnMouseUp because _dragMixinOnMouseDown already set a mouseup event on the map and call it self
                 // layer.pm._dragMixinOnMouseUp();
@@ -135,8 +151,11 @@ const DragMixin = {
         if(isMarker){
             this._tempLayer.setLatLng(this._layer.getLatLng());
             this._layer = this._tempLayer;
-            // fire pm:dragstart event
-            this._layer.fire('pm:drag', e);
+            if(L.PM.Utils._fireEvent){
+                L.PM.Utils._fireEvent(this._layer,'pm:drag',e);
+            }else {
+                this._layer.fire('pm:drag', e);
+            }
         }
     },
     _checkDragAllowed: function () {
