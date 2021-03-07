@@ -23,6 +23,7 @@ const DragMixin = {
                     }
 
                     if (!(layer instanceof L.Marker)) {
+                        layer.pm._safeToCacheDragState = true;
                         // add CSS class
                         const el = layer._path
                             ? layer._path
